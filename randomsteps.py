@@ -8,8 +8,8 @@ from random import choice
 import matplotlib.pyplot as plt
 from math import sqrt
 
-# initial position of the persion
-init_x , init_y = 0,0
+final_x = []
+final_y = []
 
 
 def random_walk():  
@@ -20,21 +20,22 @@ def random_walk():
 def displacement(init_x, init_y, final_x, final_y) -> float:
 	return sqrt((final_x-init_x)**2 +(final_y-init_x)**2)
 
+def calcDisplacement():
+	global final_x,final_y
+	maxd = 0
+	sumd = 0
 
-def plotCods():
-	fig = plt.figure()
-	fig.suptitle("Random Walk", fontsize=15, fontweight ="bold")
-	ax = fig.add_subplot()
-	
-	# this plots the initial position/coordinate of the persion as "o" in the graph
-	#ax.plot(init_x,init_y, marker = "o", markersize= 8, markerfacecolor = "red" )
-	ax.plot(0,0,marker=".",markersize = 10,markerfacecolor="red")
-	ax.text(0,0,"Initial Position")
-	px,py = init_x, init_y
-	md = 0
-	sd = 0
+	for i in range(len(final_x)):
+		d = displacement(0,0, final_x[i], final_y[i])
+		sumd+=d
+		if maxd < d:
+			maxd = d
+	return maxd,sumd/len(final_x)
+
+def getcoordiantes():
 	x = [0]
 	y = [0]
+	px,py = x[0], y[0]
 
 	# calculate 1000 random steps and plot each of the coordinate in graph
 	for i in range(1000):
@@ -43,22 +44,29 @@ def plotCods():
 	    py += dy
 	    x.append(px)
 	    y.append(py)
-	    d = displacement(init_x, init_y, px,py)
-	    if d > md:
-	    	md = d
-	    sd += d
+
+	return x,y
 
 
-	    ax.plot(x,y,color = "blue", linestyle = "dotted", linewidth = 1, marker = ".", markersize = 2)
-	  	
-	# title for graph (maxdisplacement and avarage displacement included)
-	ax.plot(px,py,marker=".", markersize=10,markerfacecolor = "red")
-	ax.text(px,py,"Final Position")	   
-	dis1 = str("Max Displacement = %.4f  " %md)
-	dis2 = str("Average Displacement = %.4f" %(sd/1000))
-	title = dis1 + dis2
-	ax.set_title(title)
+def plotCods():
+	fig = plt.figure()
+	fig.suptitle("Random Walk", fontsize=15, fontweight ="bold")
+	ax = fig.add_subplot()
+	colors = ["red", "blue", "cyan", "green", "yellow", "black","magenta"]
+	global final_x,final_y
 
+	# plot graph for 1000 different people 
+	for i in range(1000):
+		c = choice(colors)
+		x,y = getcoordiantes()
+		final_x.append(x[-1])
+		final_y.append(y[-1])
+		ax.plot(x,y,color = c, linestyle = "dotted", linewidth = 1, marker = ".", markersize = 2)
+	
+	# claculate max and average displacement
+	dm, da = calcDisplacement()
+	dist = "Max Displacement = %.3f Average Displacement = %.3f" %(dm,da)
+	ax.set_title(dist) #set the max and average displacement as subplot titleb
 
 	plt.show()
 
